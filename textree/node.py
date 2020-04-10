@@ -1,16 +1,19 @@
 from anytree import NodeMixin, RenderTree
+import json
 import re
 
 
 class TNode(NodeMixin):
-    sections = [
+    groups = [
         'document', 'part', 'chapter',
         'section', 'subsection', 'subsubsection',
-        'paragraph','subparagraph'
+        'paragraph','subparagraph',
     ]
+
     def __init__(self, name, tag, ts, te=-1, parent=None, children=None):
-        self.lvl = -1 if tag not in TNode.sections else TNode.sections.index(tag)
+        self.group = -1 if tag not in TNode.groups else TNode.groups.index(tag)
         self.desc = '<TNode [{}]: {} ({}, {})>'
+        self.small_label = None
         self.name = name
         self.tag = tag
         self.ts = ts
@@ -60,6 +63,9 @@ class TNode(NodeMixin):
     def __len__(self):
         return self.te - self.te
 
+    def _pretty_label(self):
+        return  f'[{self.tag}]: {self.name}'
+
     def pretty_print(self):
         """ Print the tree """
         for pre, _, node in RenderTree(self):
@@ -83,10 +89,74 @@ class TNode(NodeMixin):
             Traverses the tree downward from current node.
             Ignores possible siblings of current node.
         """
-        for pre, _, node in RenderTree(self):
-            treestr = u"%s%s" % (pre, node)
-            print(treestr.ljust(8))
+        nodes = [n for _, _, n in RenderTree(self)]
+        labels = {}
+        graph = {'nodes':[], 'edges': []}
 
+        # Form the nodes:
+        for n in nodes:
+            graph['nodes'].append({
+                'id': n.id,
+                'name': n.name,
+                'tag': n.tag,
+                'texlabel': n.label,
+                'word count': n.word_count,
+                'n comments': len(n.comments),
+                'n commands': len(n.commands),
+                'n references': len(n.references),
+                'n citations': len(n.citations),
+                # These for the vis.js:
+                'value': n.word_count,
+                'label': n._pretty_label(),
+                'group': n.group,
+                'title': f'words: {n.word_count}'
+            })
+            # Save the label s we can refer to correct node:
+            if n.label is not None:
+                labels[n.label] = n.id
+
+        # Form the edges:
+        for i, n in enumerate(nodes):
+            # Skip root (no parent):
+            if n.parent is None:
+                continue
+
+            # Link to the parent:
+            graph['edges'].append({
+                'id': f'p{i}',
+                'from': n.parent.id,
+                'to': n.id,
+                'weight': 1,
+                'type': 'undirected',
+                # These for the vis.js:
+                'value': 1,
+                # These for Gephi:
+                'source': n.parent.id,
+                'target': n.id,
+
+            })
+
+            # Link all the references:
+            for j, r in enumerate(n.references):
+                target = labels.get(r, False)
+                if not target:
+                    print(f'did not find a reference:"{r}"')
+                    continue
+
+                graph['edges'].append({
+                    'id': f'r{i}-{j}',
+                    'from': n.id,
+                    'to': target,
+                    'weight': 0.3,
+                    'type': 'directed',
+                    # These for the vis.js:
+                    'color': '#',
+                    'dashes': True,
+                    'value': 0.3,
+                    'arrowhead': 'normal'
+
+                })
+        return graph
 
     def to_gephi_csv(self, filename='textree', delim=','):
         """ Save two csv files which can be visualised with gephi
@@ -97,51 +167,22 @@ class TNode(NodeMixin):
             nodes.csv:
                 ID, Tag, Name, ...
         """
-        nodes = [n for _, _, n in RenderTree(self)]
-        labels = {}
+        graph = self.to_graph()
+
+        node_keys = graph['nodes'][0].keys()
+        edge_keys = graph['edges'][0].keys()
 
         # 1. The nodes:
         with open(filename+'_nodes.csv', 'w') as f:
-            f.write(delim.join([
-                'ID','Name','Tag','Label','Word Count',
-                'N Comments','N Commands','N References','N Citations\n'
-            ])
-            )
-
-            for n in nodes:
-                # Print the node info:
-                f.write(delim.join([str(v) for v in [
-                    n.id, n.name, n.tag, n.label, n.word_count,
-                    len(n.comments), len(n.commands),
-                    len(n.references), len(n.citations)]
-                ])+'\n')
-                # Save the label s we can refer to correct node:
-                if n.label is not None:
-                    labels[n.label] = n.id
+            f.write(delim.join([str(k) for k in node_keys]))
+            for n in graph['nodes']:
+                f.write(delim.join([str(n[k]) for n in  node_keys])+'\n')
 
         # 2. The edges:
         with open(filename+'_edges.csv', 'w') as f:
-            f.write(delim.join(['ID','Source','Target','Weight','Type\n']))
-            for i, n in enumerate(nodes):
-                # Skip root (no parent):
-                if n.parent is None:
-                    print('parent none')
-                    continue
-
-                # Link to the parent:
-                f.write(delim.join([str(v) for v in [
-                    f'p{i}', n.parent.id, n.id, 1, 'Undirected\n']
-                ]))
-
-                # Link all the references:
-                for j, r in enumerate(n.references):
-                    target = labels.get(r, False)
-                    if not target:
-                        print("did not find a reference:", r)
-                        continue
-                    f.write(delim.join([str(v) for v in [
-                        f'r{i}-{j}', n.id, target, 0.5, 'Directed\n']
-                    ]))
+            f.write(delim.join([str(k) for k in edge_keys]))
+            for e in graph['nodes']:
+                f.write(delim.join([str(e[k]) for e in edge_keys])+'\n')
 
     def parse_contents(self, texts):
         """ Analyse contents for commands, text, groups and label
@@ -182,6 +223,19 @@ class TNode(NodeMixin):
 
 
 class TEnv(TNode):
+    groups = [
+        'document', 'figure', 'subfigure', 'tabular', 'itemize'
+
+    ]
     def __init__(self, tag, ts, te=-1, parent=None, children=None):
         super().__init__('env', tag, ts, te)
+        group = -1 if tag not in TEnv.groups else TEnv.groups.index(tag)
+        self.group = group + len(TNode.groups)  # HACK: differnt groups...
         self.desc = '<TEnv [{}]>: {} ({}, {})'
+
+    def __str__(self):
+        return self.desc.format(self.tag, self.label, self.ts, self.te)
+
+    def _pretty_label(self):
+        label = self.label if self.label is not None else '(unlabeled)'
+        return f'[{self.tag}]: {label}'
