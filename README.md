@@ -16,7 +16,7 @@ Feature highlights:
 ## Installation
 1. Download / clone source, e.g.:
     ```
-    $ git clone https://github.com/PebbleBonk/TexTree.git
+    $ git clone https://github.com/PebbleBonk/textree.git
     ```
 2. Install required packages
     ```
