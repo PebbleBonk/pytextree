@@ -66,6 +66,7 @@ def parse_tex_to_tree(text):
 
     # The base node which contains the entire document:
     doc = [TNode('Root', 'Root', 0, len(text))]
+    doc[0].id = '$'
     for i, p in enumerate(pieces):
         # Assign a unique ID for the nodes:
         p.id = f'n{i}'
@@ -128,7 +129,7 @@ def open_tex_project(main_tex_file):
             if m is not None:
                 d = os.path.dirname(f.name)
                 incl_file = os.path.join(d, m.group(1)+'.tex')
-                print(incl_file)
+                print("Loaded:", incl_file)
                 # Add the contents of that file:
                 text += open_tex_project(incl_file)
     return text
