@@ -8,7 +8,10 @@ Feature highlights:
 - Extract several, maybe useful, stats on the file
 - Create a traversable tree from the LaTeX project
     - Built upon the awesome `NodeMixin` of [`anytree`](https://github.com/c0fec0de/anytree)
--
+- Export to a graph to support visualisation
+    - A `dict` with __edges__ and __nodes__
+    - Creates edges between references within the project
+    - Specifically export to `.csv` files supported by [__Gephi__](https://gephi.org/)
 
 ## Installation
 1. Download / clone source, e.g.:
@@ -30,6 +33,7 @@ Basic workflow with the `TexTree` consists of two steps:
 1. Load the tex file into text
 2. Parse the text into a tree
 
+
 ### Loading a LaTeX project into a tree
 You can use the `textree.open_tex_project()` to load your LaTeX project into a string
 ```py
@@ -39,14 +43,17 @@ txt = tt.open_tex_project('examples/lorem.tex')
 
 Then you can simply parse the text into a tree:
 ```py
-tt = tt.parse_tex_to_tree(txt) # >>> <TNode [Root]: Root (0, 5502)>
+tree = tt.parse_tex_to_tree(txt) # >>> <TNode [Root]: Root (0, 5502)>
 ```
 The function returns the root node of the created tree. You can traverse it with `.children` and `.parent` attributes.
+
+
+
 
 ### Printing the tree
 You can also pretty print the created tree for more information:
 ```py
-tt.pretty_print()
+tree.pretty_print()
 ```
 Output:
 >```
@@ -70,6 +77,48 @@ Output:
 >    │   └── <TNode [subsection]: S3.S1  (5300, 5484)>
 >    └── <TEnv [appendices]>: None (5435, 5485)
 >```
+
+### Exporting
+To visualise your project as a network / graph with some external software you can export the project as a `dict` containing nodes and edges.
+```py
+graph = tree.to_graph()
+print(graph['nodes'][0])
+print(graph['edges'][0])
+```
+
+Output:
+>```js
+>{
+>    'id': '$',
+>    'name': 'Root',
+>    'tag': 'Root',
+>    'texlabel': None,
+>    'word count': 0,
+>    'n comments': 0,
+>    'n commands': 5,
+>    'n references': 0,
+>    'n citations': 0,
+>    'value': 0,
+>    'label': '[Root]: Root',
+>    'group': -1,
+>    'title': 'words: 0'}
+>{
+>    'id': 'p1',
+>    'from': '$',
+>    'to': 'n0',
+>    'weight': 1,
+>    'type': 'undirected',
+>    'value': 1,
+>    'source': '$',
+>    'target': 'n0'
+>}
+>```
+
+Alternativaly, you can export to a `.csv` files combatible with [__Gephi__](https://gephi.org/):
+```
+tree.to_gephi_csv()
+```
+This will create two files, one containing the nodes and one containing the edges.
 
 ## Notes
 Some limitations of the project:
