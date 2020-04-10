@@ -153,7 +153,10 @@ class TNode(NodeMixin):
                     'color': '#',
                     'dashes': True,
                     'value': 0.3,
-                    'arrowhead': 'normal'
+                    'arrowhead': 'normal',
+                    # These for Gephi:
+                    'source': n.parent.id,
+                    'target': n.id,
 
                 })
         return graph
@@ -176,13 +179,13 @@ class TNode(NodeMixin):
         with open(filename+'_nodes.csv', 'w') as f:
             f.write(delim.join([str(k) for k in node_keys]))
             for n in graph['nodes']:
-                f.write(delim.join([str(n[k]) for n in  node_keys])+'\n')
+                f.write(delim.join([str(n[k]) for k in  node_keys])+'\n')
 
         # 2. The edges:
         with open(filename+'_edges.csv', 'w') as f:
             f.write(delim.join([str(k) for k in edge_keys]))
-            for e in graph['nodes']:
-                f.write(delim.join([str(e[k]) for e in edge_keys])+'\n')
+            for e in graph['edges']:
+                f.write(delim.join([str(e[k]) for k in edge_keys])+'\n')
 
     def parse_contents(self, texts):
         """ Analyse contents for commands, text, groups and label
