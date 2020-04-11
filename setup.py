@@ -5,7 +5,8 @@ from setuptools import setup
 HERE = pathlib.Path(__file__).parent
 
 # The text of the README file
-README = (HERE / "README.md").read_text()
+with (HERE/"README.md").open(encoding='utf-8') as f:
+    README = f.read()
 
 # This call to setup() does all the work
 setup(
@@ -14,7 +15,7 @@ setup(
     description="Create a tree object from a LaTeX project",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/PebbleBonk/textree",
+    url="https://github.com/PebbleBonk/pytextree",
     author="Olli Riikonen",
     author_email="pebblebonk@gmail.com",
     license="MIT",

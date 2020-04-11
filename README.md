@@ -29,7 +29,7 @@ Basic workflow with the `PyTexTree` consists of two steps:
 2. Parse the text into a tree
 
 **NOTE:**
->For testing, you can use the provided .tex [example](https://github.com/PebbleBonk/textree/blob/master/examples/lorem.tex).
+>For testing, you can use the provided .tex [example](https://github.com/PebbleBonk/pytextree/blob/master/examples/lorem.tex).
 
 ### 3.1. Loading a LaTeX project into a tree
 You can use the `textree.open_tex_project()` to load your LaTeX project into a string
