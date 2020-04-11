@@ -1,4 +1,4 @@
-# TexTree
+# PyTexTree
 Create a tree object from a LaTeX project.
 
 
@@ -16,26 +16,20 @@ Feature highlights:
 
 
 ## 2. Installation
-1. Download / clone source, e.g.:
-    ```
-    $ git clone https://github.com/PebbleBonk/textree.git
-    ```
-2. Install required packages
-    ```
-    $ pip install -r requirements.txt
-    ```
-3. Import to your script and use:
-    ```py
-    import textree as tt
-    txt = tt.open_tex_project('lorem.tex')
-    ```
+Using pip:
+```
+$ pip install pytextree
+```
+
 
 
 ## 3. Usage
-Basic workflow with the `TexTree` consists of two steps:
+Basic workflow with the `PyTexTree` consists of two steps:
 1. Load the tex file into text
 2. Parse the text into a tree
 
+**NOTE:**
+>For testing, you can use the provided .tex [example](https://github.com/PebbleBonk/textree/blob/master/examples/lorem.tex).
 
 ### 3.1. Loading a LaTeX project into a tree
 You can use the `textree.open_tex_project()` to load your LaTeX project into a string
