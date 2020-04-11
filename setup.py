@@ -26,5 +26,9 @@ setup(
     ],
     packages=["pytextree"],
     include_package_data=True,
-    install_requires=["anytree", "numpy", "six"],
+    install_requires=[
+        "anytree==2.8.0",
+        "numpy==1.18.2",
+        "six==1.14.0",
+    ],
 )
