@@ -16,19 +16,11 @@ Feature highlights:
 
 
 ## 2. Installation
-1. Download / clone source, e.g.:
-    ```
-    $ git clone https://github.com/PebbleBonk/textree.git
-    ```
-2. Install required packages
-    ```
-    $ pip install -r requirements.txt
-    ```
-3. Import to your script and use:
-    ```py
-    import textree as tt
-    txt = tt.open_tex_project('lorem.tex')
-    ```
+Using pip:
+```
+$ pip install pytextree
+```
+
 
 
 ## 3. Usage
