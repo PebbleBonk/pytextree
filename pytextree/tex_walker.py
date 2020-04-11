@@ -1,4 +1,4 @@
-from textree.node import TNode, TEnv
+from .node import TNode, TEnv
 from collections import defaultdict
 import numpy as np
 import re

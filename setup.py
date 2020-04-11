@@ -24,7 +24,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    py_modules=["textree"],
+    packages=["pytextree"],
     include_package_data=True,
     install_requires=["anytree", "numpy", "six"],
 )
