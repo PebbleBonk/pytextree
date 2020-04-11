@@ -34,7 +34,7 @@ Basic workflow with the `PyTexTree` consists of two steps:
 ### 3.1. Loading a LaTeX project into a tree
 You can use the `textree.open_tex_project()` to load your LaTeX project into a string
 ```py
-import textree as tt
+import pytextree as tt
 txt = tt.open_tex_project('examples/lorem.tex')
 ```
 
