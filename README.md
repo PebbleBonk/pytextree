@@ -1,5 +1,5 @@
 # PyTexTree
-Create a tree object from a LaTeX project.
+Create a tree object from a LaTeX project. v0.1.1.
 
 
 ## 1. Features
@@ -134,3 +134,6 @@ Some limitations of the project:
 1. If you are laoding a project with includes, make sure the main file ends with `main.tex`
     - e.g. `my_latex_project_main.tex`
     - The files this includes, should be in the same directory
+2. Required package version compatablity not checked
+    - Earlier versions might be fine as well
+3. `TNode.pretty_print()` does not work on Windows console due characters
