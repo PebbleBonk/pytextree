@@ -26,5 +26,5 @@ setup(
     ],
     py_modules=["textree"],
     include_package_data=True,
-    install_requires=["anytree", "numpy"],
+    install_requires=["anytree", "numpy", "six"],
 )
