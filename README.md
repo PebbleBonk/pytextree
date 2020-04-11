@@ -1,7 +1,8 @@
 # TexTree
 Create a tree object from a LaTeX project.
 
-## Features
+
+## 1. Features
 This project was done to provide a way to handle / analyse LaTeX projects more easily.
 Feature highlights:
 - Support opening LaTeX projects consisting of multiple files (using `\include`)
@@ -13,7 +14,8 @@ Feature highlights:
     - Creates edges between references within the project
     - Specifically export to `.csv` files supported by [__Gephi__](https://gephi.org/)
 
-## Installation
+
+## 2. Installation
 1. Download / clone source, e.g.:
     ```
     $ git clone https://github.com/PebbleBonk/textree.git
@@ -28,13 +30,14 @@ Feature highlights:
     txt = tt.open_tex_project('lorem.tex')
     ```
 
-## Usage
+
+## 3. Usage
 Basic workflow with the `TexTree` consists of two steps:
 1. Load the tex file into text
 2. Parse the text into a tree
 
 
-### Loading a LaTeX project into a tree
+### 3.1. Loading a LaTeX project into a tree
 You can use the `textree.open_tex_project()` to load your LaTeX project into a string
 ```py
 import textree as tt
@@ -48,9 +51,21 @@ tree = tt.parse_tex_to_tree(txt) # >>> <TNode [Root]: Root (0, 5502)>
 The function returns the root node of the created tree. You can traverse it with `.children` and `.parent` attributes.
 
 
+#### 3.1.1. Tree node attributes
+The node, describing a section or an evironment in the LaTeX project, contains some information about the containing text:
+
+Attribute | Description | Example
+----------|-------------|--------
+`.commands` | List of found LaTeX commands in this node | ["\textbf", "\ref{fig:my_fig}"]
+`.comments` | List of comments in this node | ["% A comment"]
+`.word_count` | Number of words, excluding comments and commands | 527
+`.label` | LaTeX label of the node if one exists | "fig:my_graph"
+`.citations` | Cited labels | ["Lamport1984", "Rossum1991"]
+`.texts` | Text contents | ["This is a paragraph.", "And another."]
 
 
-### Printing the tree
+
+### 3.2. Printing the tree
 You can also pretty print the created tree for more information:
 ```py
 tree.pretty_print()
@@ -78,7 +93,7 @@ Output:
 >    └── <TEnv [appendices]>: None (5435, 5485)
 >```
 
-### Exporting
+### 3.3. Exporting
 To visualise your project as a network / graph with some external software you can export the project as a `dict` containing nodes and edges.
 ```py
 graph = tree.to_graph()
@@ -120,7 +135,7 @@ tree.to_gephi_csv()
 ```
 This will create two files, one containing the nodes and one containing the edges.
 
-## Notes
+## 4. Notes
 Some limitations of the project:
 1. If you are laoding a project with includes, make sure the main file ends with `main.tex`
     - e.g. `my_latex_project_main.tex`
